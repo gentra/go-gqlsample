@@ -1,0 +1,9 @@
+/vendor/
+/.idea/
+/bin/
+/files/etc/toko-configuration/
+/.docker/
+/.scannerwork/
+.vscode/launch.json
+/files/etc/toko-credentials/
+*DS_Store*
