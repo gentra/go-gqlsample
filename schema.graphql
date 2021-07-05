@@ -7,7 +7,7 @@ type Query {
     hello: String!
 
     # A list of all Lift objects
-    allLifts(status: LiftStatus): [Lift!]!
+    allLifts(): [Lift!]!
 }
 
 type Mutation {

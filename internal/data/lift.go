@@ -12,13 +12,3 @@ type Lift struct {
 	Night         bool
 	ElevationGain int32
 }
-
-type Trail struct {
-	ID         string
-	Name       string
-	Status     enum.TrailStatus
-	Difficulty string
-	Groomed    bool
-	Trees      bool
-	Night      bool
-}

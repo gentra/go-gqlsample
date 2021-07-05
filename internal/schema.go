@@ -19,7 +19,7 @@ func NewSchemaWrapper(helloResolver *resolver.Hello, liftResolver *resolver.Lift
 }
 
 func (s *SchemaWrapper) Init() error {
-	var LiftStatusEnum = graphql.NewEnum(graphql.EnumConfig{
+	var liftStatusEnum = graphql.NewEnum(graphql.EnumConfig{
 		Name: "LiftStatus",
 		Values: graphql.EnumValueConfigMap{
 			"OPEN": &graphql.EnumValueConfig{
@@ -35,7 +35,7 @@ func (s *SchemaWrapper) Init() error {
 		Description: "An enum describing the options for LiftStatus: OPEN, CLOSED, HOLD",
 	})
 
-	var TrailStatusEnum = graphql.NewEnum(graphql.EnumConfig{
+	var trailStatusEnum = graphql.NewEnum(graphql.EnumConfig{
 		Name: "TrailStatus",
 		Values: graphql.EnumValueConfigMap{
 			"OPEN": &graphql.EnumValueConfig{
@@ -48,7 +48,7 @@ func (s *SchemaWrapper) Init() error {
 		Description: "An enum describing the options for TrailStatus: OPEN, CLOSED",
 	})
 
-	var TrailType = graphql.NewObject(graphql.ObjectConfig{
+	var trailType = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Trail",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
@@ -58,7 +58,7 @@ func (s *SchemaWrapper) Init() error {
 				Type: graphql.NewNonNull(graphql.String),
 			},
 			"status": &graphql.Field{
-				Type: TrailStatusEnum,
+				Type: trailStatusEnum,
 			},
 			"difficulty": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.String),
@@ -75,7 +75,7 @@ func (s *SchemaWrapper) Init() error {
 		},
 	})
 
-	var LiftType = graphql.NewObject(graphql.ObjectConfig{
+	var liftType = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Lift",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
@@ -85,7 +85,7 @@ func (s *SchemaWrapper) Init() error {
 				Type: graphql.NewNonNull(graphql.String),
 			},
 			"status": &graphql.Field{
-				Type: LiftStatusEnum,
+				Type: liftStatusEnum,
 			},
 			"capacity": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.Int),
@@ -97,7 +97,7 @@ func (s *SchemaWrapper) Init() error {
 				Type: graphql.NewNonNull(graphql.Int),
 			},
 			"trailAccess": &graphql.Field{
-				Type:        graphql.NewList(TrailType),
+				Type:        graphql.NewList(trailType),
 				Resolve:     s.trailResolver.TrailsByLift(),
 				Description: "A list of trails that this Lift serves",
 			},
@@ -114,7 +114,7 @@ func (s *SchemaWrapper) Init() error {
 					Description: "A simple greeting to you, earthlings!",
 				},
 				"allLifts": &graphql.Field{
-					Type:    graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(LiftType))),
+					Type:    graphql.NewNonNull(graphql.NewList(graphql.NewNonNull(liftType))),
 					Resolve: s.liftResolver.AllLifts(),
 					Description: "A Lift is a chairlift, gondola, tram, funicular, pulley, rope tow, or other means of" +
 						" ascending a mountain.",
@@ -125,22 +125,22 @@ func (s *SchemaWrapper) Init() error {
 			Name: "Mutation",
 			Fields: graphql.Fields{
 				"setLiftStatus": &graphql.Field{
-					Type:    graphql.NewNonNull(LiftType),
+					Type:    graphql.NewNonNull(liftType),
 					Resolve: s.liftResolver.SetLiftStatus(),
 					Args: graphql.FieldConfigArgument{
 						"id": &graphql.ArgumentConfig{
 							Type: graphql.NewNonNull(graphql.ID),
 						},
 						"status": &graphql.ArgumentConfig{
-							Type: graphql.NewNonNull(LiftStatusEnum),
+							Type: graphql.NewNonNull(liftStatusEnum),
 						},
 					},
 				},
 			},
 		}),
 		Types: []graphql.Type{
-			LiftStatusEnum,
-			TrailStatusEnum,
+			liftStatusEnum,
+			trailStatusEnum,
 		},
 	})
 	if err != nil {
