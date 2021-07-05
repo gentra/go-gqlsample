@@ -1,18 +1,25 @@
 package main
 
 import (
-	"github.com/gentra/go-gqlsample/internal/resolver"
 	"log"
 	"net/http"
 
 	"github.com/gentra/go-gqlsample/internal"
-	graphql "github.com/graph-gophers/graphql-go"
-	"github.com/graph-gophers/graphql-go/relay"
+	"github.com/gentra/go-gqlsample/internal/resolver"
 )
 
 func main() {
-	schema := graphql.MustParseSchema(internal.Schema, &resolver.BaseResolver{})
-	http.Handle("/graphql", &relay.Handler{Schema: schema})
+	helloResolver := resolver.NewHello()
+	liftResolver := resolver.NewLift()
+	trailResolver := resolver.NewTrail()
+	schemaWrapper := internal.NewSchemaWrapper(helloResolver, liftResolver, trailResolver)
+
+	err := schemaWrapper.Init()
+	if err != nil {
+		log.Fatalf("unable to parse schema %+v", err)
+	}
+
+	http.Handle("/graphql", internal.NewHandler(schemaWrapper).Handle())
 	http.Handle("/ui", http.HandlerFunc(internal.GraphiQLHandler))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

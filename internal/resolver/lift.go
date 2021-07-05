@@ -1,52 +1,43 @@
 package resolver
 
 import (
-	"github.com/gentra/go-gqlsample/internal/data"
+	"errors"
+
 	"github.com/gentra/go-gqlsample/internal/enum"
 	"github.com/gentra/go-gqlsample/internal/fetcher"
-	"github.com/graph-gophers/graphql-go"
+	"github.com/graphql-go/graphql"
 )
 
 type Lift struct {
-	Data data.Lift
 }
 
-func NewLifts(data []data.Lift) []*Lift {
-	lifts := make([]*Lift, len(data))
-	for index := range data {
-		lifts[index] = NewLift(data[index])
+func NewLift() *Lift {
+	return &Lift{}
+}
+
+func (l *Lift) AllLifts() graphql.FieldResolveFn {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		return fetcher.GetLifts(), nil
 	}
-	return lifts
 }
 
-func NewLift(data data.Lift) *Lift {
-	return &Lift{Data: data}
-}
+func (l *Lift) SetLiftStatus() graphql.FieldResolveFn {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		id, ok := p.Args["id"].(string)
+		if !ok {
+			return nil, errors.New("error casting input id")
+		}
 
-func (l *Lift) ID() graphql.ID {
-	return graphql.ID(l.Data.ID)
-}
+		status, ok := p.Args["status"].(enum.LiftStatus)
+		if !ok {
+			return nil, errors.New("error casting input status")
+		}
 
-func (l *Lift) Name() string {
-	return l.Data.Name
-}
+		data, err := fetcher.SetLiftStatus(id, status)
+		if err != nil {
+			return nil, err
+		}
 
-func (l *Lift) Status() *enum.LiftStatus {
-	return &l.Data.Status
-}
-
-func (l *Lift) Capacity() int32 {
-	return l.Data.Capacity
-}
-
-func (l *Lift) Night() bool {
-	return l.Data.Night
-}
-
-func (l *Lift) ElevationGain() int32 {
-	return l.Data.ElevationGain
-}
-
-func (l *Lift) TrailAccess() []*Trail {
-	return NewTrails(fetcher.GetTrailsByLiftID(l.Data.ID))
+		return data, nil
+	}
 }
